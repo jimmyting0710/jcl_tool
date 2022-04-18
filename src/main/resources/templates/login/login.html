@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <title>CCBS 2.0 測試個案管理系統</title>
+    <style type="text/css">
+        #loginButton {
+            background-color: blue;
+            color: white;
+            border-radius: 10px;
+            border: 1px solid gray;
+            font-size: 16px;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        #resetValidateNumber {
+            background-color: blue;
+            color: white;
+            border-radius: 2px;
+            border: 1px solid gray;
+            font-size: 12px;
+            width: 50px;
+            cursor: pointer;
+        }
+
+        #errMsg {
+            font-size: 10pt;
+            color: red;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #content {
+            background-color: blue;
+            border: 1px solid blue;
+            width: 500px;
+            height: 350px;
+            margin: 10% auto;
+        }
+
+        #contentTitle {
+            text-align: center;
+            font-size: 20pt;
+            color: white;
+        }
+
+        #contentBody {
+            background-color: white;
+            width: inherit;
+            height: 250px;
+            margin: 0 auto;
+        }
+
+        #dataTable {
+            line-height: 2;
+            margin: 20px auto;
+            text-align: center;
+            position: relative;
+            top: 50px;
+        }
+
+        #my_image {
+            cursor: pointer;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            border: 1px solid blue;
+        }
+
+        #msg {
+            color: blue;
+            font-size: 10pt;
+        }
+    </style>
+    <!--    <script th:src="@{jquery-3.6.0.min.js}"></script>-->
+</head>
+<body>
+<!--<h1 th:each="cookie :${#httpServletRequest.getCookies()}" th:text="${cookie.getName()}"></h1>-->
+<div id="content">
+    <div id="contentTitle"><strong>CCBS 2.0 測試個案管理系統</strong></div>
+
+    <div id="contentBody">
+        <form
+                th:action="@{/login/form}"
+                id="loginForm"
+                method="POST"
+                class="form-horizontal"
+        ></form>
+        <table id="dataTable">
+            <!-- Username -->
+            <tr>
+                <td><label style="color: blue"> 帳號：</label></td>
+                <td>
+                    <input
+                            id="username"
+                            type="text"
+                            name="username"
+                            form="loginForm"
+                            placeholder="請輸入帳號"
+                    />
+                </td>
+            </tr>
+
+            <!-- Password -->
+            <tr>
+                <td><label style="color: blue">密碼：</label></td>
+                <td>
+                    <input
+                            id="password"
+                            type="password"
+                            name="password"
+                            form="loginForm"
+                            placeholder="請輸入密碼"
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div th:if="${param.error}">
+                        <div style="color: red">登入帳號／密碼有誤，請重新輸入</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input
+                            name="imageCode"
+                            id="imageCode"
+                            type="text"
+                            placeholder="驗證碼"
+                            form="loginForm"
+                    />
+                </td>
+                <td>
+                    <div>
+                        <img th:src="@{/code/image}" alt="驗證碼" id="my_image"/>
+                    </div>
+                </td>
+                <td>
+                    <button id="resetValidateNumber" onclick="changePic()">
+                        重產
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <button
+                            id="loginButton"
+                            type="button"
+                            form="loginForm"
+                            onclick="verifyKaptcha()"
+                    >
+                        登入
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <strong id="msg">請使用chrome瀏覽器進行登入</strong>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <script th:inline="javascript">
+        function changePic() {
+            document.getElementById("my_image").src =
+                "/code/image?" + Math.random();
+        }
+
+        function verifyKaptcha() {
+            // 取得帳號欄位輸入的字串
+            const usernameElement = document.getElementById("username");
+            const usernameText = usernameElement.value.trim();
+
+            // 取得密碼欄位輸入的字串
+            const passwordElement = document.getElementById("password");
+            const passwordText = passwordElement.value.trim();
+
+            // 取得驗證碼欄位輸入的字串
+            const imageCodeElement = document.getElementById("imageCode");
+            const imageCodeText = imageCodeElement.value.trim();
+
+            // 判斷輸入欄位不得為空
+            switch (usernameText) {
+                case "":
+                    alert("帳號不得為空");
+                    break;
+            }
+            switch (passwordText) {
+                case "":
+                    alert("密碼不得為空");
+                    break;
+            }
+            switch (imageCodeText) {
+                case "":
+                    alert("驗證碼不得為空");
+                    break;
+            }
+            // 送出表單
+            if (
+                usernameText.trim() !== "" &&
+                passwordText.trim() !== "" &&
+                imageCodeText.trim() !== ""&&
+                imageCodeText === document.cookie.split('=')[1]
+            ) {
+                document.getElementById("loginForm").submit();
+            }else if (
+                usernameText.trim() !== "" &&
+                passwordText.trim() !== "" &&
+                imageCodeText.trim() !== ""&&
+                imageCodeText !== document.cookie.split('=')[1]
+            ){
+                alert("驗證碼輸入錯誤!")
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

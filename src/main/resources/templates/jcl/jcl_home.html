@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>JCL</title>
+</head>
+
+<body>
+<table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+    <tr>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl/jcl_home}"
+                                                             style="color: azure">查詢可執行之AD</a></th>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/su}" style="color: azure">測試個案查詢</a>
+        </th>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/defect}">
+            <font color=#FFFFFF>DEFECT維護及查詢</font>
+        </a></th>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/report}">
+            <font color=#FFFFFF>統計報表</font>
+        </a></th>
+    </tr>
+</table>
+
+<p><span style="font-size:16px"><strong>查詢條件</strong></span></p>
+
+<form th:action="@{/jcl/search}">
+    <br>
+    <!--        <input checked="checked" name="sprint" type="radio" value="All" />All-->
+    <!--        <input name="sprint" type="radio" value="sprint1" />Sprint1-->
+    <!--        <input name="sprint" type="radio" value="sprint2" />Sprint2-->
+    <!--        <input name="sprint" type="radio" value="sprint3" />Sprint3-->
+    <!--        <br />-->
+    <label for="testType">測試階段分類:&nbsp;</label>
+    <select class="form-control" name="testType" id="testType">
+        <option selected="selected" value="All">選擇</option>
+        <option th:each="testType:${codeTypeIdEqualsSystemType}"
+                th:value="${testType.getCodeId()}"
+                th:text="${testType.getCodeDesc()}"></option>
+    </select>
+    <br/>
+    <label for="systemOp">系統作業類別 :&nbsp;</label>
+    <select class="form-control" name="systemOp" id="systemOp">
+        <option selected="selected" value="All">選擇</option>
+        <option th:each="systemOp:${codeTypeIdSystemOperation}"
+                th:value="${systemOp.getCodeDesc()}"
+                th:text="${systemOp.getCodeDesc()}"></option>
+    </select>
+    <br/>
+    AD：<input size="16" type="search" name="adName" placeholder="以AD名稱搜尋"/><br/>
+    <input type="submit" value="查詢"/><br/>
+    <!--    從第一頁開始查詢-->
+    <input hidden name="page" value="0">
+</form>
+
+<form enctype="multipart/form-data" name="result">
+    <table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+        <caption>
+            <strong>
+                    <span style="font-size:16px">查詢結果
+                    </span>
+
+            </strong>
+        </caption>
+        <thead>
+        <tr>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">Index</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">系統作業類別</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">AD</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">AD Description</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">CHT OWNER</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">JCL數量</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--        <tr th:if="${allJclList == null}">-->
+        <!--            <td>查無符合條件資料</td>-->
+        <!--        </tr>-->
+        <tr th:each="allJclLists : ${allJclList}">
+            <td th:text="${allJclLists.sprint}"></td>
+            <td th:text="${allJclLists.ad}"></td>
+            <td th:text="${allJclLists.addesc}"></td>
+            <td th:text="${allJclLists.cht_ap}"></td>
+            <td th:text="${allJclLists.cht_dc}"></td>
+            <td th:text="${allJclLists.systemtype + allJclLists.systemdesc}"></td>
+            <!--                <td th:text="${allJclLists.jclcout}"></td>-->
+            <td>
+                <a th:href="@{search/{ad}(ad = ${allJclLists.ad})}">
+                    <span th:text="${allJclLists.jclcout}"></span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+</body>
+
+</html>

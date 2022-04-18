@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en"></head>
+<body>
+<div style="display:inline-block">
+    <strong>檔案查核點</strong>
+</div>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width:600px">
+
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">SPRINT</td>
+        <td th:text="${sprint}"></td>
+    </tr>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">AD</td>
+        <td th:text="${ad+addesc}"></td>
+    </tr>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">JCL</td>
+        <td th:text="${jclName}"></td>
+    </tr>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">DD</td>
+        <td th:text="${cpdd}"></td>
+    </tr>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">AP負責窗口</td>
+        -->
+        <td th:text="${cht_ap}"></td>
+    </tr>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">DC負責窗口</td>
+        <td th:text="${cht_dc}"></td>
+    </tr>
+
+    <tr th:each="fcpids:${findCheckPointInputDetailSet}">
+        <td style="background-color: rgb(204, 255, 153);">InputFile</td>
+        <td th:text="${fcpids}"></td>
+    </tr>
+    <tr th:each="fcpods:${findCheckPointOutputDetailSet}">
+        <td style="background-color: rgb(204, 255, 153);">OutputFile</td>
+        <td th:text="${fcpods}"></td>
+    </tr>
+</table>
+
+<p>&nbsp;</p>
+<p><input name="close" type="button" value="關閉視窗" onclick="window.close();"/></p>
+</body>
+</html>

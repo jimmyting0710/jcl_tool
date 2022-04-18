@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en"xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DefectList</title>
+</head>
+<body>
+
+
+<div align="center">
+    <h1>CODE_LIST</h1>
+
+    <table style="border:3px #cccccc solid;" cellpadding="10" border='1'>
+        <thead>
+        <tr>
+            <th>CODE_ID</th>
+            <th>CODE_TYPE</th>
+            <th>CODE_DESC</th>
+            <th>CODE_ENABLED</th>
+            <th>CODE_TYPE_ID</th>
+
+        </tr>
+        </thead>
+        <tbody>
+                    <tr th:each="codeList : ${listCodeList}">
+                        <td th:text="${codeList.codeId}"></td>
+                        <td th:text="${codeList.codeType}"></td>
+                        <td th:text="${codeList.codeDesc}"></td>
+                        <td th:text="${codeList.codeEnabled}"></td>
+                        <td th:text="${codeList.codeTypeId}"></td>
+
+
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DbIms</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style type="text/css">
+        .ccl div {
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .Data-Content {
+            /* width: 100%; 表單寬度 */
+            line-height: 40px;
+        }
+
+        .Data-Title {
+            float: left;
+            /* width: 25%; Label寬度，視情況調整 */
+            margin-right: 20px;
+        }
+
+        .Data-Items {
+            float: left;
+            width: 25%;
+        }
+
+        .AlignRight {
+            text-align: left;
+        }
+
+        #DIV1 {
+            width: 200px;
+            /*DIV區塊寬度*/
+            line-height: 50px;
+            /*DIV區塊高度*/
+            padding: 20px;
+            /*DIV區塊內距，參閱：CSS padding 內距。*/
+            border: 2px blue solid;
+            /*DIV區塊邊框，參閱：CSS border 邊框設計。*/
+            margin-right: 10px;
+            /*靠右外距，參閱：CSS margin 邊界使用介紹範例教學。*/
+            float: left;
+        }
+
+        #DIV2 {
+            width: 200px;
+            line-height: 50px;
+            padding: 20px;
+            border: 2px green solid;
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+   <table  border="1" cellpadding="1" cellspacing="1" style="width:850px">
+    <tr>
+        <td rowspan="2" >子系統別</td>
+        <td colspan="3">測試個案</td>
+        <td colspan="2">Defect</td>
+    </tr>
+    <tr>
+        <td>測試通過</td>
+        <td>測試失敗</td>
+        <td>未完成</td>
+        <td>未結案</td>
+        <td>已結案</td>
+    </tr>
+    <tr th:each="testcase:${testcase}">
+        <td th:text="${testcase.systemtype}"></td>
+        <td><a th:each="OK:${OK}" th:text="${testcase.systemtype} eq ${OK.systemtype} ? ${OK.C} : ' ' "></a></td>
+        <td><a th:each="Fail:${Fail}" th:text="${testcase.systemtype} eq ${Fail.systemtype} ? ${Fail.C} : ' ' "></a></td>
+        <td><a th:each="Undone:${Undone}" th:text="${testcase.systemtype} eq ${Undone.systemtype} ? ${Undone.C} : ' ' "></a></td>
+        <td><a th:each="undone:${defectundone}" th:text="${testcase.systemtype} eq ${undone.systemtype} ? ${undone.C} : ' '"></a></td>
+        <td><a th:each="done:${defectdone}" th:text="${testcase.systemtype} eq ${done.systemtype} ? ${done.C} : ' '"></a></td>
+    </tr>
+
+   </table>
+
+</body>
+
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>JCL</title>
+</head>
+
+<body>
+<table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+    <tr>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl/jcl_home}"
+                                                             style="color: azure">查詢可執行之AD</a></th>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/su}" style="color: azure">測試個案查詢</a>
+        </th>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/defect}">
+            <font color=#FFFFFF>DEFECT維護及查詢</font>
+        </a></th>
+        <th scope="col" style="background-color:#6699cc;"><a th:href="@{/report}">
+            <font color=#FFFFFF>統計報表</font>
+        </a></th>
+    </tr>
+</table>
+
+<p><span style="font-size:16px"><strong>查詢條件</strong></span></p>
+
+<form th:action="@{/jcl/search}">
+    <br>
+    <!--    <input checked="checked" name="sprint" type="radio" value="All"/>All-->
+    <!--    <input name="sprint" type="radio" value="sprint1"/>Sprint1-->
+    <!--    <input name="sprint" type="radio" value="sprint2"/>Sprint2-->
+    <!--    <input name="sprint" type="radio" value="sprint3"/>Sprint3-->
+    <!--    <br/>-->
+    <!--    <label for="codeTypeId">子系統:&nbsp;</label><select class="form-control" name="codeTypeId" id="codeTypeId">-->
+    <!--        <option selected="selected" value="">選擇</option>-->
+    <!--        <option th:each="systemType:${codeTypeIdEqualsSystemType}"-->
+    <!--                th:value="${systemType.getCodeId()}"-->
+    <!--                th:text="${systemType.getCodeId()}"></option>-->
+    <!--        &lt;!&ndash;        th:selected="${systemType.getCodeId()} eq ${systemType}"></option>&ndash;&gt;-->
+    <!--    </select>-->
+    <!--    <br/>-->
+    <label for="testType">測試階段分類:&nbsp;</label>
+    <select class="form-control" name="testType" id="testType">
+        <option selected="selected" value="All">選擇</option>
+        <option th:each="testType:${codeTypeIdEqualsSystemType}"
+                th:value="${testType.getCodeId()}"
+                th:text="${testType.getCodeDesc()}"></option>
+    </select>
+    <br/>
+    <label for="systemOp">系統作業類別 :&nbsp;</label>
+    <select class="form-control" name="systemOp" id="systemOp">
+        <option selected="selected" value="All">選擇</option>
+        <option th:each="systemOp:${codeTypeIdSystemOperation}"
+                th:value="${systemOp.getCodeDesc()}"
+                th:text="${systemOp.getCodeDesc()}"></option>
+    </select>
+    <br/>
+    AD：<input size="16" type="search" name="adName" placeholder="以AD名稱搜尋"/><br/>
+    <input type="submit" value="查詢"/><br/>
+    <!--    從第一頁開始查詢-->
+    <input hidden name="page" value="0">
+</form>
+
+<!--取得網址與參數-->
+<!--    <h1 th:text="${#httpServletRequest.getRequestURL()}"></h1>-->
+<!--    <h1 th:text="${#httpServletRequest.getQueryString()}"></h1>-->
+<!--<a th:text="${#httpServletRequest.getRequestURL()}+${#httpServletRequest.getQueryString()}">-->
+
+<a hidden="hidden" id="exeid">產生可執行之AD的EXCEL</a>
+<button onclick="clickAButton()">產出Excel</button>
+<form enctype="multipart/form-data" name="result">
+    <table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+        <caption>
+            <strong>
+                    <span style="font-size:16px">查詢結果
+                    </span>
+                <span th:text="${allJclList.totalElements} + '筆資料'">
+                    </span>
+                <br>
+                <span th:if="${allJclList.totalElements} == 0" th:text="查無符合條件資料" style="color: red">
+                    </span>
+                <span th:if="${allJclList.totalElements} != 0" th:text="目前在第+${page+1}+頁"></span>
+                <br>
+                頁數: <span th:each="pages : ${pageList}">
+                        <a th:href="@{search(testType=${testType},systemOp=${systemOp},adName=${adName},page=${pages})}"
+                           th:text="${pages+1}"
+                           th:id="page+${pages+1}"></a>
+                    </span>
+            </strong>
+        </caption>
+        <thead>
+        <tr>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">Index</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">系統作業類別</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">AD</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">AD Description</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">CHT OWNER</th>
+            <th scope="col" style="background-color: rgb(204, 255, 153);">JCL數量</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="allJclLists : ${allJclList}">
+            <td th:text="${allJclLists.index}"></td>
+            <td th:text="${allJclLists.system_operation}"></td>
+            <td th:text="${allJclLists.ad}"></td>
+            <td th:text="${allJclLists.addesc}"></td>
+            <td th:text="${allJclLists.cht}"></td>
+            <td>
+                <a th:href="@{searchJclDetail/{ad}(ad = ${allJclLists.ad})}" target="_blank">
+                    <span th:text="${allJclLists.jclcout}"></span>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+        <caption style="caption-side: bottom">
+            <strong>
+                <span th:if="${allJclList.totalElements} != 0" th:text="目前在第+${page+1}+頁"></span>
+                <br>
+                頁數: <span th:each="pages : ${pageList}">
+                        <a th:href="@{search(testType=${testType},systemOp=${systemOp},adName=${adName},page=${pages})}"
+                           th:text="${pages+1}"
+                           th:id="page+${pages+1}"></a>
+                    </span>
+            </strong>
+        </caption>
+    </table>
+</form>
+<script th:inline="javascript">
+    window.onload = function refresh() {
+        clickPage();
+        generateaHref();
+    }
+
+    function clickPage() {
+        const page = window.location.search;
+        let currentPage = page.charAt(page.length - 1);
+        let pageNum = Number(currentPage) + 1;
+        let pageId = "page" + pageNum
+        let selectPageId = document.getElementById(pageId);
+        selectPageId.style.display = "none"
+    }
+
+    function generateaHref() {
+        const getUrlString = location.href;
+        const url = new URL(getUrlString);
+        const testType = url.searchParams.get("testType");
+        const systemOp = url.searchParams.get("systemOp");
+        const adName = url.searchParams.get("adName");
+        let api = `/jcl/generateExcel?testType=${testType}&systemOp=${systemOp}&adName=${adName}`
+        let a = document.getElementById("exeid")
+        a.setAttribute("href", api);
+    }
+
+    function clickAButton() {
+        const a = document.getElementById("exeid");
+        a.click();
+    }
+</script>
+</body>
+
+</html>

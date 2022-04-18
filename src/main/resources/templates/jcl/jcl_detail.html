@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en"></head>
+<body>
+<div style="display:inline-block">
+    <div style="display:inline-block; font-size: large; font-weight: bold" th:text="${ad}"></div>
+    <strong>：</strong>
+    <div style="display:inline-block; font-size: large; font-weight: bold" th:text="${addesc}"></div>
+</div>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width:500px">
+    <thead>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">JCL</td>
+        <td style="background-color: rgb(204, 255, 153);">JCL Description</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="listJclByAds : ${listJclByAd}">
+        <td th:text="${listJclByAds.jcl}"></td>
+        <td th:text="${listJclByAds.jcldesc}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p>&nbsp;</p>
+<p><input name="close" type="button" value="關閉視窗" onclick="window.close();"/></p>
+</body>
+</html>

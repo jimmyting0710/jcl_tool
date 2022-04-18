@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DbIms</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style type="text/css">
+        .ccl div {
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .Data-Content {
+            /* width: 100%; 表單寬度 */
+            line-height: 40px;
+        }
+
+        .Data-Title {
+            float: left;
+            /* width: 25%; Label寬度，視情況調整 */
+            margin-right: 20px;
+        }
+
+        .Data-Items {
+            float: left;
+            width: 25%;
+        }
+
+        .AlignRight {
+            text-align: left;
+        }
+
+        #DIV1 {
+            width: 200px;
+            /*DIV區塊寬度*/
+            line-height: 50px;
+            /*DIV區塊高度*/
+            padding: 20px;
+            /*DIV區塊內距，參閱：CSS padding 內距。*/
+            border: 2px blue solid;
+            /*DIV區塊邊框，參閱：CSS border 邊框設計。*/
+            margin-right: 10px;
+            /*靠右外距，參閱：CSS margin 邊界使用介紹範例教學。*/
+            float: left;
+        }
+
+        #DIV2 {
+            width: 200px;
+            line-height: 50px;
+            padding: 20px;
+            border: 2px green solid;
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+    AD: <h2 th:text="${adname}"></h2>
+    JCL: <h2 th:text="${jclname}"></h2>
+    參數設定: <textarea name="para"  id="para" style="width:500px;height:40px;vertical-align:top;" th:utext="${para?.para}"></textarea>
+  
+    <table border="2" id="table1" style="width: 100%">
+        <H3>INPUT</H3>
+        <tr>
+            <th>STEP_NAME</th>
+            <th>JCLPROGRAM</th>
+            <th>DD</th>
+            <th>DSN</th>
+            <th>OPEN_MODE</th>
+        </tr>
+        <tr th:each="input:${input}">
+            <td th:text="${input.step_name}"></td>
+            <td th:text="${input.JCLPROGRAM}"></td>
+            <td th:text="${input.DD}"></td>
+            <td th:text="${input.DSN}"></td>
+            <td th:text="${input.OPEN_MODE}"></td>
+        </tr>
+    </table>
+    <table border="2" id="table2" style="width: 100%">
+        <H3>OUTPUT</H3>
+        <tr>
+            <th>STEP_NAME</th>
+            <th>JCLPROGRAM</th>
+            <th>DD</th>
+            <th>DSN</th>
+            <th>OPEN_MODE</th>
+        </tr>
+        <tr th:each="output:${output}">
+            <td th:text="${output.step_name}"></td>
+            <td th:text="${output.JCLPROGRAM}"></td>
+            <td th:text="${output.DD}"></td>
+            <td th:text="${output.DSN}"></td>
+            <td th:text="${output.OPEN_MODE}"></td>
+        </tr>
+    </table>
+
+    <!-- <form name="form1" th:action="@{/savekeyin}" method="get"> -->
+    <form name="form1" action="" method="get"></form>
+    <div class="ccl">
+        <div id="#DIV1">
+            <div class="Data-Content">
+                <h2>DB2</h2>
+                <div class="Data-Title">
+                    <div class="AlignRight">
+                        <label for="DB2_DELETE">DB2_DELETE：</label><br />
+                        <label for="DB2_INCLUDE">DB2_INCLUDE：</label><br />
+                        <label for="DB2_INSERT">DB2_INSERT：</label><br />
+                        <label for="DB2_SELECT">DB2_SELECT：</label><br />
+                        <label for="DB2_UPDATE">DB2_UPDATE：</label><br />
+                    </div>
+                </div>
+                <div class="Data-Items">
+                    <input type="text" id="DB2_DELETE" name="DB2_DELETE" th:value="${finddbims.DB2_DELETE}" /><br />
+                    <input type="text" id="DB2_INCLUDE" name="DB2_INCLUDE" th:value="${finddbims.DB2_INCLUDE}" /><br />
+                    <input type="text" id="DB2_INSERT" name="DB2_INSERT" th:value="${finddbims.DB2_INSERT}" /><br />
+                    <input type="text" id="DB2_SELECT" name="DB2_SELECT" th:value="${finddbims.DB2_SELECT}" /><br />
+                    <input type="text" id="DB2_UPDATE" name="DB2_UPDATE" th:value="${finddbims.DB2_UPDATE}" /><br />
+                </div>
+            </div>
+        </div>
+
+
+        <div id="#DIV2">
+            <div class="Data-Content">
+                <h2>IMS</h2>
+                <div class="Data-Title">
+                    <div class="AlignRight">
+                        <label for="IMS_DELETE">IMS_DELETE：</label><br />
+                        <label for="IMS_GET">IMS_GET：</label><br />
+                        <label for="IMS_INSERT">IMS_INSERT：</label><br />
+                        <label for="IMS_UPDATE">IMS_UPDATE：</label><br />
+                    </div>
+                </div>
+                <div class="Data-Items">
+                    <input type="text" id="IMS_DELETE" name="IMS_DELETE" th:value="${finddbims.IMS_DELETE}" /><br />
+                    <input type="text" id="IMS_GET" name="IMS_GET" th:value="${finddbims.IMS_GET}" /><br />
+                    <input type="text" id="IMS_INSERT" name="IMS_INSERT" th:value="${finddbims.IMS_INSERT}" /><br />
+                    <input type="text" id="IMS_UPDATE" name="IMS_UPDATE" th:value="${finddbims.IMS_UPDATE}" /><br />
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    <input type="hidden" id="tid" name="tid" th:value="${tid}">
+    <input type="hidden" id="AD" name="AD" th:value="${adname}">
+    <input type="hidden" id="JCL" name="JCL" th:value="${jclname}">
+    <!-- <br /><input type="submit" value="儲存"> -->
+    <input type="button" id="btn1" value="儲存">
+    </form>
+
+
+
+    <input type="button" value="關閉視窗" onclick="window.close();" />
+
+
+    <script th:inline="javascript">
+
+        // function myfun() {
+        // 	var form1 = document.form1;
+        // 	form1.action = "update";
+        // 	form1.submit();
+
+        // }
+        $("#btn1").on("click", function () {
+
+            let tid=[];
+            let para=[];
+            let DB2_DELETE = [];
+            let DB2_INCLUDE = [];
+            let DB2_INSERT = [];
+            let DB2_SELECT = [];
+            let DB2_UPDATE = [];
+
+            let IMS_DELETE = [];
+            let IMS_GET = [];
+            let IMS_INSERT = [];
+            let IMS_UPDATE = [];
+            let AD = [];
+            let JCL = [];
+            var aa = [];
+
+            $("[name='para']").each(function (k, v) {
+                para[k] = v.value;
+            })
+
+            $("[name='tid']").each(function (k, v) {
+                tid[k] = v.value;
+            })
+
+            $("[name='DB2_INCLUDE']").each(function (k, v) {
+                DB2_INCLUDE[k] = v.value;
+            })
+
+            $("[name='DB2_DELETE']").each(function (k, v) {
+                DB2_DELETE[k] = v.value;
+            })
+
+            $("[name='DB2_UPDATE']").each(function (k, v) {
+                DB2_UPDATE[k] = v.value;
+            })
+
+            $("[name='DB2_INSERT']").each(function (k, v) {
+                DB2_INSERT[k] = v.value;
+            })
+
+            $("[name='IMS_DELETE']").each(function (k, v) {
+                IMS_DELETE[k] = v.value;
+            })
+
+            $("[name='IMS_GET']").each(function (k, v) {
+                IMS_GET[k] = v.value;
+            })
+
+            $("[name='IMS_INSERT']").each(function (k, v) {
+                IMS_INSERT[k] = v.value;
+            })
+
+            $("[name='IMS_UPDATE']").each(function (k, v) {
+                IMS_UPDATE[k] = v.value;
+            })
+            
+            $("[name='AD']").each(function (k, v) {
+                AD[k] = v.value;
+            })
+            
+            $("[name='JCL']").each(function (k, v) {
+                JCL[k] = v.value;
+            })
+
+            $("[name='DB2_SELECT']").each(function (k, v) {
+                let a = {};
+                DB2_SELECT[k] = v.value;
+                a.para=para[k];
+                a.tid=tid[k];
+                a.DB2_DELETE = DB2_DELETE[k];
+                a.DB2_INCLUDE = DB2_INCLUDE[k];
+                a.DB2_INSERT = DB2_INSERT[k];
+                a.DB2_SELECT = DB2_SELECT[k];
+                a.DB2_UPDATE = DB2_UPDATE[k];
+                a.IMS_DELETE = IMS_DELETE[k];
+                a.IMS_GET = IMS_GET[k];
+                a.IMS_INSERT = IMS_INSERT[k];
+                a.IMS_UPDATE = IMS_UPDATE[k];
+                a.AD = AD[k];
+                a.JCL = JCL[k];
+                aa[k] = a
+            })
+
+
+
+            // $('#alldata').val(JSON.stringify(aa))
+            console.log(aa)
+
+
+            $.ajax({
+                type: "GET", //傳送方式
+                url: "/savekeyin", //傳送目的地
+                // contentType: "application/json;charse=UTF-8",
+                dataType: "json", //資料格式
+                data: { //傳送資料
+
+                    'ss': JSON.stringify(aa),
+
+
+                },
+                success: function (data) {
+                    alert("已更新");
+                    // console.log(data);
+                    location.reload(true);
+                },
+                error: function (data) {
+                    alert("錯誤");
+                    console.log(data);
+                }
+            })
+
+
+
+
+        });
+
+        /*console.log($(".form-control").val()); */
+
+       
+
+    </script>
+
+</body>
+
+</html>

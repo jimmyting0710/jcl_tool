@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>JCL</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.3/sweetalert2.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.3/sweetalert2.js"
+        type="text/javascript"></script>
+
+    <style>
+        #uploadMessage {
+            color: red;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <table border="1" cellpadding="1" cellspacing="1" style="width:900px">
+        <tr>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl/jcl_home}">
+                    <font color=#FFFFFF>查詢可執行之AD</font>
+                </a></th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/su}" style="color: azure">測試個案查詢</a>
+            </th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/defect}">
+                    <font color=#FFFFFF>DEFECT維護及查詢</font>
+                </a></th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/report}">
+                    <font color=#FFFFFF>統計報表</font>
+                </a></th>
+        </tr>
+    </table>
+    <p>
+        <span th:text="${Message}" id="uploadMessage"></span>
+    <table border="0" cellpadding="1" cellspacing="1" style="width:900px; border-color:#3399ff">
+        <tr>
+            <td colspan="3" style="background-color:#ccccff"><strong>查詢條件</strong></td>
+        </tr>
+        </tbody>
+    </table>
+    </p>
+    <table border="0" cellpadding="1" cellspacing="1" style="width:900px; border-color:#3399ff">
+
+        <tbody>
+
+
+        <form th:action="@{/defectSearch}">
+            測試階段分類:<select name="testType" id="testType">
+            <option value="ALL">ALL</option>
+            <option th:each="selectTestType : ${selectTestType}" th:value="${selectTestType.codeId}"
+                    th:text="${selectTestType.codeDesc}"
+            ></option>
+        </select>
+            </br>
+
+            程式作業類別:<select name="programType" id="programType">
+            <option value="BATCH">批次作業</option>
+            <option value="ONLINE">線上交易</option>
+        </select>
+            <br>
+            批次系統作業類別:<select name="systemOperation" id="systemOperation">
+            <option value="ALL">ALL</option>
+            <option th:each="selectSystemOperation : ${selectSystemOperation}" th:value="${selectSystemOperation.codeDesc}"
+                    th:text="${selectSystemOperation.codeDesc}"
+            ></option>
+
+        </select>
+            <br>
+            線上交易作業類別:<select name="systemOperationOnline" id="systemOperationOnline">
+            <option value="CICS WEB">CICS WEB</option>
+            <option value="Data Power">Data Power</option>
+            <option value="Socket">Socket</option>
+            <option value="Web Service">Web Service</option>
+        </select>
+            <br>
+            AD: <input size="16" type="search" name="ad" placeholder="以AD名稱搜尋"/><br/>
+            JCL: <input size="16" type="search" name="jcl" placeholder="以JCL名稱搜尋"/><br/>
+
+
+            <tr>
+                <td colspan="3">Defect狀態：
+            </TR>
+            <tr>
+                <td colspan="3" style="text-align:left">
+                    <table border="0" cellpadding="1" cellspacing="1" style="width:850px" align="right">
+                        <tbody>
+                        <tr>
+                            <td><input name="issueStatus" type="checkbox" value="ALL" checked="checked" id="ALL"/>ALL&nbsp;&nbsp;
+                            </td>
+                            <td></td>
+                            <td></td>
+
+                        </tr>
+                        <tr>
+                            <td><input name="issueStatus" type="checkbox" value="OPEN" class="MULTI"/>OPEN&nbsp;&nbsp;</td>
+                            <td><input name="issueStatus" type="checkbox" value="RESOLVED" class="MULTI"/>RESOLVED&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="CLOSED" class="MULTI"/>CLOSED</td>
+
+                        </tr>
+                        <tr>
+                            <td><input name="issueStatus" type="checkbox" VALUE="DONE" class="MULTI"/>DONE&nbsp;</td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="REJECTED" class="MULTI"/>REJECTED&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="UI" class="MULTI"/>UNDER INVESTIGATION&nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input name="issueStatus" type="checkbox" VALUE="RTR" class="MULTI"/>REQUEST TESTER REVIEW&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="UR" class="MULTI"/>UNDER RESOLUTION&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="RIR" class="MULTI"/>REQUEST INVESTIGATOR
+                                REVIEW&nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input name="issueStatus" type="checkbox" VALUE="CONFIRMED" class="MULTI"/>CONFIRMED&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="FIXED" class="MULTI"/>FIXED&nbsp;</td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="RFR" class="MULTI"/>DEPLOYED/READY FOR
+                                RETEST&nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input name="issueStatus" type="checkbox" VALUE="RR" class="MULTI"/>REWORK REQUEST&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="DEFERRED" class="MULTI"/>DEFERRED&nbsp;
+                            </td>
+                            <td><input name="issueStatus" type="checkbox" VALUE="RFD" class="MULTI"/>READY FOR DEPLOYMENT&nbsp;
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!--                <input type="submit" value="查詢"/><br/>-->
+                    <!--    從第一頁開始查詢-->
+
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3"><input name="查詢" id="submit1" type="submit" value="查詢"/></td>
+                <input hidden name="page" value="0">
+            </tr>
+        </form>
+        </tbody>
+    </table>
+    <P>
+    <table border="0" cellpadding="1" cellspacing="1" style="width:900px; border-color:#3399ff">
+        <tbody>
+        <form method="POST" th:action="@{/upload}" enctype="multipart/form-data">
+
+            <tr>
+                <td colspan="3" style="background-color:#ccccff"><strong>更新Jira(Defect)資料</strong></td>
+            </tr>
+            <tr>
+                <td colspan="3">選擇Jira 檔案：<input type="file" name="file"></td>
+            </tr>
+            <tr>
+                <td colspan="3"><input name="upload" type="submit" value="匯入資料"/></td>
+            </tr>
+        </form>
+        </tbody>
+    </table>
+
+
+    <p>&nbsp;</p>
+
+
+    <p>&nbsp;</p>
+
+    <script>
+
+        //Defect狀態一定要選取
+        $("#submit1").click(function () {
+            var check = $("input[name='issueStatus']:checked").length;//判斷有多少個方框被勾選
+            if (check == 0) {
+                swal("沒有勾選Defect狀態", "請至少勾選一項DEFECT狀態", "warning");
+                return false;//不要提交表單
+            }
+        })
+
+        $(document).ready(function () {
+            $("#ALL").click(function () {
+                if ($("#ALL").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+                    $(".MULTI").each(function () {
+                        $(this).prop("checked", false);//把所有的核方框的property都取消勾選
+                    })
+                } else {
+
+                }
+            })
+
+            $(".MULTI").click(function () {
+                if ($("#ALL").prop("checked")) {//如果全選按鈕有被選擇的話（被選擇是true）
+
+                    $("#ALL").prop("checked", false);//把所有的核方框的property都取消勾選
+
+                } else {
+
+                }
+            })
+
+        })
+
+    </script>
+
+
+</body>

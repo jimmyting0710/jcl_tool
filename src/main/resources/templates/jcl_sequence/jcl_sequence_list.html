@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>JCL</title>
+    <!--    <style type="text/css">-->
+    <!--        .squareDiv{-->
+    <!--            margin: 24px auto;-->
+    <!--            width: auto;-->
+    <!--            display: inline;-->
+    <!--        }-->
+    <!--        .square {-->
+    <!--            border: 2px black solid;-->
+    <!--            font-size: 15px;-->
+    <!--            background-color: whitesmoke;-->
+    <!--            padding: 5px;-->
+    <!--            margin: 8px;-->
+    <!--        }-->
+    <!--    </style>-->
+    <link rel='stylesheet' href='/webjars/bootstrap/5.1.0/css/bootstrap.min.css'>
+</head>
+
+<body>
+    <table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+        <tr>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl/jcl_home}"
+                    style="color: azure">查詢可執行之AD</a>
+            </th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/su}" style="color: azure">測試個案查詢</a>
+            </th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl_sequence/jcl_sequence_home}"
+                    style="color: azure">執行順序查詢</a></th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/defect}">
+                    <font color=#FFFFFF>DEFECT維護及查詢</font>
+                </a></th>
+            <th scope="col" style="background-color:#6699cc;"><a th:href="@{/report}">
+                    <font color=#FFFFFF>統計報表</font>
+                </a></th>
+
+        </tr>
+    </table>
+
+    <p><span style="font-size:16px"><strong>查詢條件</strong></span></p>
+
+    <form th:action="@{/jcl_sequence/jcl_sequence_list}">
+        AD：<input size="16" type="search" name="adName" placeholder="以AD名稱搜尋" /><br />
+        <input type="submit" value="查詢" /><br />
+    </form>
+
+    <div style="text-align: center">
+        <div style="display:inline-block; font-size: large; font-weight: bold " th:text="${ad}"></div>
+        <strong>：</strong>
+        <div style="display:inline-block; font-size: large; font-weight: bold " th:text="${addesc}"></div>
+    </div>
+    <br>
+    <!--<table>-->
+    <!--    <thead>-->
+    <!--    <tr>-->
+    <!--        <td style="color: red">JCL名稱</td>-->
+    <!--        <td style="color: red">之前需執行的JCL</td>-->
+    <!--    </tr>-->
+    <!--    </thead>-->
+    <!--    <tbody>-->
+    <!--    <tr th:each="adj:${finalJclMap}">-->
+    <!--        <td th:text="${adj.key}"></td>-->
+    <!--        <td th:text="${adj.value}"></td>-->
+    <!--    </tr>-->
+    <!--    </tbody>-->
+    <!--</table>-->
+    <!--<script>-->
+    <!--    beautifyContent()-->
+    <!--    function beautifyContent(){-->
+    <!--        let td= document.querySelectorAll("td")-->
+    <!--        let tdAmount = td.length-->
+    <!--        for (i = 0; i<tdAmount; i++){-->
+    <!--            let tdTextRemoveBracket  = td[i].innerText.replace(/\[|]/g,'');-->
+    <!--            td[i].innerText = tdTextRemoveBracket-->
+    <!--            let tdArray = td[i].innerText.split(",");-->
+    <!--            td[i].innerText = tdArray[0].replace(",","     ")-->
+    <!--        }-->
+    <!--    }-->
+    <!--</script>-->
+
+    <!--<div>-->
+    <!--    <div th:each="adj:${jclSequenceByJclName}">-->
+    <!--        <div name="abc" th:id="${adj.getKey()}" th:text="${adj.value}"></div>-->
+    <!--        <div th:text="${adj.getKey()}"></div>-->
+    <!--    </div>-->
+    <!--</div>-->
+
+    <!--<script>-->
+    <!--    function beautifyContent(){-->
+    <!--        let div = document.querySelectorAll("[name='abc']");-->
+    <!--        let divAmount = div.length-->
+    <!--        for (i = 0; i<divAmount; i++){-->
+    <!--            let divTextRemoveBracket  = div[i].innerText.replace(/\[|]/g,'');-->
+    <!--            div[i].innerText = divTextRemoveBracket-->
+    <!--            let divArray = div[i].innerText.split(",");-->
+    <!--            for (j = 0; j<divArray.length; j++){-->
+    <!--                let createNewSpan = document.createElement("span");-->
+    <!--                createNewSpan.name = "jclSpan"-->
+    <!--                createNewSpan.innerText = divArray[j]-->
+    <!--                div[i].appendChild(createNewSpan)-->
+    <!--            }-->
+    <!--        }-->
+    <!--    }-->
+    <!--</script>-->
+
+    <!--<table>-->
+    <!--    <thead>-->
+    <!--    <tr>-->
+    <!--        <td style="color: red">JCL順序</td>-->
+    <!--        <td style="color: red">JCL列表</td>-->
+    <!--    </tr>-->
+    <!--    </thead>-->
+    <!--    <tbody>-->
+    <!--    <tr th:each="adj:${finalJclMap}">-->
+    <!--        <td th:text="${adj.key}"></td>-->
+    <!--        <td th:text="${adj.value}"></td>-->
+    <!--    </tr>-->
+    <!--    </tbody>-->
+    <!--</table>-->
+
+    <div id="container" class="container">
+
+    </div>
+
+    <script>
+
+        // 取得要fetch data的網址
+        const getJclSequenceDataUrl = "http://localhost:8081/jcl_sequence/getJclSequenceData?"
+        const getAllSelfJclDataUrl = "http://localhost:8081/jcl_sequence/getAllSelfJcl?"
+        const split = location.href.split("?")
+        const param = split[1];
+
+        // fetch方法
+        const asyncFetch = async () => {
+            try {
+                const getJclSequenceDataResponse = await fetch(getJclSequenceDataUrl + param);
+                const jclSequenceData = await getJclSequenceDataResponse.json();
+                const getAllSelfJclDataResponse = await fetch(getAllSelfJclDataUrl + param);
+                const allSelfJclData = await getAllSelfJclDataResponse.json();
+                // console.log(allSelfJclData);
+                await showData(jclSequenceData, allSelfJclData);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        // 執行
+        asyncFetch();
+
+        // 編排畫面的方法
+        async function showData(jclSequenceData, allSelfJclData) {
+
+            // 取得jclSequenceData物件的長度
+            let jclSequenceDataObject = Object.keys(jclSequenceData);
+            let jclSequenceDataObjectLength = jclSequenceDataObject.length;
+
+            // 這邊是測試
+            let selfJclDataArray = Array.from(allSelfJclData)
+            // console.log(selfJclDataArray)
+
+            // 依物件長度執行迴圈
+            for (i = 0; i < jclSequenceDataObjectLength; i++) {
+                // 創造div用來裝每一個欄位的東西
+                let div = document.createElement("div");
+                // 設定div的樣式
+                div.setAttribute('class', "row justify-content-center")
+                div.style.backgroundColor = "rgba(255,0,0,0.1)";
+                div.setAttribute("name", "root")
+                // 依照每一個物件取物件內的值
+                let innerData = jclSequenceData[i];
+                for (j = 0; j < innerData.length; j++) {
+                    // 創造span用來裝每一個jcl
+                    let span = document.createElement("span")
+                    // 去除[]
+                    let spanTextRemoveBracket = innerData[j].replace(/\[|]/g, '')
+                    span.innerText = spanTextRemoveBracket;
+                    // 設定span樣式
+                    span.setAttribute('class', 'badge bg-light text-dark')
+                    span.setAttribute("name", "span")
+                    span.style.fontSize = "medium"
+                    span.style.marginBottom = "5px"
+                    span.style.marginTop = "5px"
+                    // 創造innderDiv來裝每一個物件內的span
+                    let innerDiv = document.createElement("div");
+                    // 設定innerDiv樣式
+                    innerDiv.setAttribute("class", "col-1 col-sm-3")
+                    innerDiv.style.margin = "auto"
+                    innerDiv.style.textAlign = "center";
+                    // 依序裝入外面的div
+                    innerDiv.appendChild(span)
+                    div.appendChild(innerDiv);
+                }
+                // 選擇最外圈的div
+                let box = document.getElementById("container");
+                // 創造空白與箭頭
+                let brTop = document.createElement("br")
+                let brBottom = document.createElement("br")
+                let h1 = document.createElement("h1")
+                let h1Div = document.createElement("div");
+                h1Div.style.textAlign = "center";
+                h1Div.setAttribute("name", "arrow")
+                h1.innerText = "⬇"
+                h1Div.appendChild(h1)
+                box.appendChild(div);
+                // 依序將空白與箭頭裝入最外面的div
+                if (i < jclSequenceDataObjectLength - 1) {
+                    box.appendChild(brTop);
+                    box.appendChild(h1Div);
+                    box.appendChild(brBottom);
+                }
+            }
+            // 若是beforeJCL為空字串則執行以下程式消除多餘的空白與箭頭
+            let box = document.getElementById("container");
+            let arrows = document.querySelectorAll('[name="arrow"]')
+            let roots = document.querySelectorAll('[name="root"]')
+            let rootsLength = roots.length
+            let firstRootContent = roots[0].innerText;
+            if (firstRootContent === "") {
+                box.removeChild(roots[0])
+                box.removeChild(arrows[0])
+            }
+
+            // 將符合JCL名稱的span標籤更換顏色
+            let spans = document.querySelectorAll('[name="span"]')
+            for (i = 0; i < selfJclDataArray.length; i++) {
+                let jclKeyword = selfJclDataArray[i];
+                for (j = 0; j < spans.length; j++) {
+                    let spanInnerText = spans[j].innerText;
+                    if (jclKeyword === spanInnerText) {
+                        spans[j].setAttribute("class", "badge bg-secondary")
+                        spans[j].setAttribute("name", "selfJcl")
+                    }
+                }
+            }
+
+            // 變更JCL順序的方法
+            let emptyDiv = document.createElement("div")
+            for (i = 0; i < roots.length; i++) {
+                let innerValue = roots[i].innerHTML
+                let innerValueArray = innerValue.split("</div>")
+                let newInnerHTML = "";
+                for (j = 0; j < innerValueArray.length - 1; j++) {
+                    if (innerValueArray.length - 1 === 1) {
+                        newInnerHTML = innerValueArray[0] + "</div>"
+                    } else if (innerValueArray.length - 1 === 2) {
+                        // let judge = Math.ceil((innerValueArray.length-1) / 2) -1
+                        if (j === 0) {
+                            newInnerHTML = "<div class=\"col-1 col-sm-3\" style=\"margin: auto; text-align: center;\"><span class=\"badge bg-light text-dark\" name=\"span\" style=\"font-size: medium; margin-bottom: 5px; margin-top: 5px;\"></span></div>"
+                        }
+                        newInnerHTML += innerValueArray[j] + "</div>"
+                    } else if (innerValueArray.length - 1 === 5 && j >= 1) {
+                        newInnerHTML += innerValueArray[j] + "</div>"
+                        if (j === 4) {
+                            newInnerHTML += innerValueArray[0] + "</div>"
+                        }
+                    } else if (innerValueArray.length - 1 === 7 && j >= 1) {
+                        newInnerHTML += innerValueArray[j] + "</div>"
+                        if (j === 5) {
+                            newInnerHTML += innerValueArray[0] + "</div>"
+                        }
+                    } else if (innerValueArray.length - 1 > 1 && j > 0) {
+                        let judge = Math.ceil((innerValueArray.length - 1) / 2) - 1
+                        newInnerHTML += innerValueArray[j] + "</div>"
+                        if (j === judge) {
+                            newInnerHTML += innerValueArray[0] + "</div>"
+                        }
+                    }
+                }
+                roots[i].innerHTML = newInnerHTML;
+            }
+
+
+            // 顯示之後執行的AD
+            let beforeJcl = roots[rootsLength - 1].innerText
+            let urlParam = location.href.split("=")
+            let beforeAd = urlParam[1]
+            const nextJclUrl = `http://localhost:8081/jcl_sequence/findNextAd?beforeAd=${beforeAd}&&beforeJcl=${beforeJcl}`
+            const nextJclResponse = await fetch(nextJclUrl);
+            const nextJclResponseData = await nextJclResponse.json();
+            let nextJclDataArray = Array.from(nextJclResponseData)
+            let lastDiv = document.createElement("div")
+            lastDiv.innerText = "接續執行之AD:"
+            for (i = 0; i < nextJclDataArray.length; i++) {
+                let innerDiv = document.createElement("div")
+                innerDiv.innerText = nextJclDataArray[i];
+                lastDiv.appendChild(innerDiv);
+            }
+            let h1 = document.createElement("h1")
+            let h1Div = document.createElement("div");
+            h1Div.style.textAlign = "center";
+            h1Div.setAttribute("name", "arrow")
+            h1.innerText = "⬇"
+            h1Div.appendChild(h1)
+            box.appendChild(h1Div)
+            box.appendChild(lastDiv)
+
+            // 呼叫showBreakPoint()與showCheckPoint()在欄位顯示超連結
+            showBreakPoint()
+            showCheckPoint()
+        }
+
+        async function showBreakPoint() {
+            let urlParam = location.href.split("=")
+            let beforeAd = urlParam[1]
+            let breakPointUrl = `http://localhost:8081/jcl_sequence/findBreakPoint?adName=${beforeAd}`
+            const breakPointUrlResponse = await fetch(breakPointUrl);
+            const breakPointUrlResponseData = await breakPointUrlResponse.json();
+            let breakPointArray = Array.from(breakPointUrlResponseData);
+            let spans = document.querySelectorAll('[name="selfJcl"]')
+            for (i = 0; i < spans.length; i++) {
+                for (j = 0; j < breakPointArray.length; j++) {
+                    if (spans[i].innerHTML === breakPointArray[j]) {
+                        let spanHTML = spans[i].innerHTML
+                        let breakPointDetail = `http://localhost:8081/jcl_sequence/findBreakPointDetail/${spanHTML}`
+                        let a = document.createElement("a")
+                        a.href = breakPointDetail
+                        a.innerText = "暫停：DB比對斷點"
+                        a.style.color = "white"
+                        a.target = "_blank"
+                        let br = document.createElement("br")
+                        spans[i].appendChild(br);
+                        spans[i].appendChild(a);
+                    }
+                }
+            }
+        }
+
+        async function showCheckPoint() {
+            let urlParam = location.href.split("=")
+            let beforeAd = urlParam[1]
+            let checkPointUrl = `http://localhost:8081/jcl_sequence/findCheckPoint?adName=${beforeAd}`
+            const checkPointUrlResponse = await fetch(checkPointUrl);
+            const checkPointUrlResponseData = await checkPointUrlResponse.json();
+            let checkPointArray = Array.from(checkPointUrlResponseData);
+            let spans = document.querySelectorAll('[name="selfJcl"]')
+            for (i = 0; i < spans.length; i++) {
+                for (j = 0; j < checkPointArray.length; j++) {
+                    if (spans[i].innerText.match(checkPointArray[j])) {
+                        let innerText = spans[i].innerText
+                        let innerArray = innerText.split("\n")
+                        let jcl = innerArray[0]
+                        let checkPointDetail = `http://localhost:8081/jcl_sequence/findCheckPointDetail/${jcl}`
+                        let a = document.createElement("a")
+                        a.href = checkPointDetail
+                        a.innerText = "暫停：檔案查核點"
+                        a.style.color = "white"
+                        a.target = "_blank"
+                        let br = document.createElement("br")
+                        spans[i].appendChild(br);
+                        spans[i].appendChild(a);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

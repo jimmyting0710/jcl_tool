@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<!--給spring security token不然post不會過-->
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script src="tableHTMLExport.js"></script>
+	<style>
+		#uploadMessage {
+			color: red;
+			font-size: 20px;
+		}
+	</style>
+
+
+
+</head>
+
+<body>
+	<span th:text="${param.msg}" id="uploadMessage"></span>
+	<table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+		<tr>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl/jcl_home}"
+					style="color: azure">查詢可執行之AD</a></th>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/su}" style="color: azure">測試個案查詢</a>
+			</th>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/defect}">
+					<font color=#FFFFFF>DEFECT維護及查詢</font>
+				</a></th>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/report}">
+					<font color=#FFFFFF>統計報表</font>
+				</a></th>
+		</tr>
+	</table>
+
+	<h2>查詢條件</h2>
+	<form name="form17" action="" method="get">
+		測試階段分類 :
+		<select class="form-control" name="test_type" id="test_type">
+			<option value="ALL">ALL</option>
+			<option th:each="test_type:${test_type}" th:value="${test_type.CODE_ID}" th:text="${test_type.CODE_DESC}">
+			</option>
+		</select><br>
+		程式作業類別 :
+		<select class="form-control" name="program_type" id="program_type">
+			<option value="BATCH">批次作業</option>
+			<option value="ONLINE">線上作業</option>
+		</select><br>
+		批次系統作業類別 :
+		<select class="form-control" name="system_operation" id="system_operation">
+			<option value="ALL">ALL</option>
+			<option th:each="system_operation:${system_operation}" th:value="${system_operation.CODE_DESC}"
+				th:text="${system_operation.CODE_DESC}"></option>
+		</select><br>
+		線上交易作業類別 :
+		<select class="form-control" name="online_operation" id="online_operation">
+			<option value="CICS WEB">CICS WEB</option>
+			<option value="Data Power">Data Power</option>
+			<option value="Socke">Socket</option>
+			<option value="Web Service">Web Service</option>
+		</select><br>
+
+		AD :
+		<input type="text" name="AD" id="AD" required><br>
+		JCL :
+		<input type="text" name="JCL" required><br>
+
+		<input type="button" id="search" name="search" value="查詢" onclick="tofind()" />
+		<!-- <input type="button" name="update" value="批次更新" onclick="toupdate()" /> -->
+
+		<input type="hidden" name="page" value="0">
+	</form>
+
+
+	<div style="text-align: center;">
+
+		<a style="font-size: 30px;font-weight: bolder;" th:text="${adName}"></a>
+
+	</div>
+
+	<div style="text-align: center;">
+		<caption>
+			<strong>
+				<span style="font-size:16px;">查詢結果
+				</span>
+				<span th:text="${allJclList.totalElements} + '筆資料'">
+				</span>
+				<br>
+				<span th:if="${allJclList.totalElements} == 0" th:text="查無符合條件資料" style="color: red">
+				</span>
+				<span th:if="${allJclList.totalElements} != 0" th:text="目前在+${page+1}+頁"></span>
+				<br>
+				頁數: <span th:each="pages : ${pageList}">
+					<a id="a1" th:onclick="|save()| "
+						th:href="@{show(test_type=${test_type1},program_type=${program_type1},system_operation=${system_operation1},online_operation=${online_operation1},AD=${adName},JCL=${jcl},page=${pages})}"
+						th:text="${pages+1}" th:id="page+${pages+1} "></a>
+
+
+				</span>
+			</strong>
+		</caption>
+	</div>
+	<table style="width: 100%;background-color:bisque;border: black;">
+		<form name="form3" action="/batch">
+
+
+			<tr>
+				<input th:type="hidden" id="batchad" name="batchad" th:value=${batch.ad} />
+				<input th:type="hidden" id="batchtid" name="batchtid" th:value=${batch.tid} />
+				<input th:type="hidden"
+					th:value="${#dates.format(new java.util.Date().getTime(),'yyyy-MM-dd HH:mm:ss')}"
+					id="batchrdatetime" name="batchrdatetime" />
+				<td style="text-align: right;">測試人員
+					<select class="form-control" name="batchtester_id" id="batchtester_id">
+						<option value=" ">選擇</option>
+						<option th:each="tester:${tester}" th:value="${tester.CODE_ID}" th:text="${tester.CODE_ID}">
+						</option>
+					</select>
+
+					測試結果
+					<select class="form-control" name="batchstatus" id="batchstatus">
+
+						<option th:each="result:${result}" th:value="${result.CODE_DESC}" th:text="${result.CODE_DESC}">
+						</option>
+					</select>
+
+
+					<!-- <input type="button" id="btn3" value="儲存變更"> -->
+					<input type="button" id="btn4" value="套用">
+				</td>
+			</tr>
+
+
+		</form>
+
+
+	</table>
+	<table border="2" id="table1" style="width: 100%">
+		<form name="form2" action="/update" method="get">
+
+			<tr>
+				<th>NO.</th>
+				<th>JCL</th>
+				<th>資料庫比對斷點</th>
+				<th>檔案查核點</th>
+				<th>JCL Description</th>
+				<th>測試人員</th>
+				<th>測試結果</th>
+				<th>測試完成日期</th>
+				<th>Defect編號</th>
+			</tr>
+			<tr class="tr1" th:each="allJclList: ${allJclList}">
+				<td th:text="${allJclListStat.count}"></td>
+
+				<td><a th:href="@{'/jclkeyin?tid='+${allJclList.tid}+'&jcl='+${allJclList.jcl}}" target="_blank"
+						th:text="${allJclList.jcl}"></a>
+				</td>
+
+				<td> <a th:each="breakpoint:${breakpoint}"
+						th:text="${allJclList.jcl} eq ${breakpoint.jcl} ? '有比對斷點' :' ' ">
+					</a>
+				</td>
+				<td>
+					<a th:each="checkpoint:${checkpoint}"
+						th:text="${allJclList.jcl} eq ${checkpoint.jcl} ? '有查核點' :' ' ">
+					</a>
+
+				</td>
+				<input th:type="hidden" name="jcl" th:value=${allJclList.jcl} />
+				<input th:type="hidden" id="454545" name="ad" th:value=${adName} />
+				<td th:text="${allJclList.jcldesc}"></td>
+
+				<td>
+
+					<input th:type="hidden" id="tid" name="TID" th:value=${allJclList.tid} />
+					<!-- <input th:type="hidden" name="alldata" id="alldata" /> -->
+					<input th:type="hidden"
+						th:value="${#dates.format(new java.util.Date().getTime(),'yyyy-MM-dd HH:mm:ss')}" id="RDATETIME"
+						name="RDATETIME" />
+					<select class="form-control2" name="TESTER_ID" id="TESTER_ID">
+						<option value=" ">選擇</option>
+						<option id="eachid" th:each="tester:${tester}" th:value="${tester.CODE_ID}"
+							th:text="${tester.CODE_ID}" th:selected="${tester.CODE_ID} eq ${allJclList.TESTER_ID}">
+						</option>
+					</select>
+				</td>
+
+				<td>
+					<select class="form-control1" name="STATUS" id="STATUS">
+						<option value=" ">選擇</option>
+						<option id="eachstatus" th:each="result:${result}" th:value="${result.CODE_DESC}"
+							th:text="${result.CODE_DESC}" th:selected="${result.CODE_ID} eq ${allJclList.STATUS}">
+						</option>
+
+					</select>
+				</td>
+
+				<td
+					th:text="${allJclList.STATUS} == 'N' ? ' ' : (${allJclList.STATUS} == 'T'? ' ': ${allJclList.RDATETIME})">
+				</td>
+
+
+				<td><a th:each="issue:${issue}" th:href="@{'/DefectDetail?jid='+${allJclList.jid}}" target="_blank"
+						th:text="${allJclList.STATUS}=='F' ? ( ${allJclList.jid} == ${issue.jid} ? ${issue.ISSUE_KEY} : ' ') : ' '"></a>
+					<!-- th:text="${allJclList.jid} == ${issue.jid} ? (${allJclList.STATUS}=='F' ? ${issue.ISSUE_KEY} : ' ') : ' '"></a> -->
+				</td>
+
+				<!-- <td th:text="${issue.ISSUE_KEY}"></td> -->
+				<!-- <td th:text="${allJclList.JID}"></td>
+				<td th:text="${issue.JID}"></td> -->
+			</tr></br>
+		</form>
+
+	</table>
+	<div>
+		<input type="button" id="btn1" value="儲存">
+
+		<input type="button" id="btn2" value="匯出">
+	</div>
+	<p>選擇csv檔案:</p>
+
+	<form id="csvform" th:action="@{/csvupload}" name="csvform" method="post" enctype="multipart/form-data">
+		<input type="hidden" id="url" name="url">
+
+		<input type="file" id="filename" name="filename">
+
+		<input th:type="hidden" id="adname" name="adname" th:value="${adName}" />
+
+		<input type="submit" id="btn6" value="upload" onclick="reload">
+	</form>
+
+
+
+	<script th:inline="javascript">
+		//------------------------------------------------------------------------------分頁
+		window.onload = function clickPage() {
+			const page = window.location.search;
+			let currentPage = page.charAt(page.length - 1);
+			let pageNum = Number(currentPage) + 1;
+			let pageId = "page" + pageNum
+			let selectPageId = document.getElementById(pageId);
+			// selectPageId.style.display = "none"
+
+
+
+			//------------------------------------------------------------------------------送當頁網址
+			let ur = window.location.href;
+			document.getElementById("url").value = ur;
+
+
+
+			//------------------------------------------------------------------------------點擊頁數儲存
+			function save() {
+				let TID = [];
+				let TESTER_ID = [];
+				let STATUS = [];
+				let RDATETIME = [];
+				let bb = [];
+				var aa = [];
+
+				$("[name='TID']").each(function (k, v) {
+					TID[k] = v.value;
+				})
+				$("[name='RDATETIME']").each(function (k, v) {
+					RDATETIME[k] = v.value;
+				})
+
+				$("[name='TESTER_ID']").each(function (k, v) {
+					TESTER_ID[k] = v.value;
+				})
+
+				$("[name='STATUS']").each(function (k, v) {
+					let a = {};
+					STATUS[k] = v.value;
+					a.TESTER_ID = TESTER_ID[k];
+					a.STATUS = STATUS[k];
+					a.TID = TID[k];
+					a.RDATETIME = RDATETIME[k];
+					a.bb = 1;
+					aa[k] = a
+				})
+
+				$.ajax({
+					type: "get", //傳送方式
+					url: "/update", //傳送目的地
+					// contentType: "application/json;charse=UTF-8",
+					dataType: "json", //資料格式
+					data: { //傳送資料
+						'ss': JSON.stringify(aa),
+					},
+					success: function (data) {
+
+						// console.log(data);
+						// location.reload(true);
+					},
+					error: function (data) {
+						// alert("錯誤");
+						// console.log(data);
+					}
+				});
+			};
+
+			//------------------------------------------------------------------------------點擊儲存
+			$("#btn1").on("click", function () {
+
+				let TID = [];
+				let TESTER_ID = [];
+				let STATUS = [];
+				let RDATETIME = [];
+				var aa = [];
+
+				$("[name='TID']").each(function (k, v) {
+					TID[k] = v.value;
+				})
+
+				$("[name='RDATETIME']").each(function (k, v) {
+					RDATETIME[k] = v.value;
+				})
+
+				$("[name='TESTER_ID']").each(function (k, v) {
+					TESTER_ID[k] = v.value;
+				})
+
+				$("[name='STATUS']").each(function (k, v) {
+					let a = {};
+					STATUS[k] = v.value;
+					a.TESTER_ID = TESTER_ID[k];
+					a.STATUS = STATUS[k];
+					a.TID = TID[k];
+					a.RDATETIME = RDATETIME[k];
+					aa[k] = a
+				})
+
+				// $('#alldata').val(JSON.stringify(aa))
+				// console.log(aa)
+
+				$.ajax({
+					type: "get", //傳送方式
+					url: "/update", //傳送目的地
+					// contentType: "application/json;charse=UTF-8",
+					dataType: "json", //資料格式
+					data: { //傳送資料
+						'ss': JSON.stringify(aa),
+					},
+					success: function (data) {
+						alert("已更新");
+						// console.log(data);
+						location.reload(true);
+					},
+					error: function (data) {
+						alert("錯誤");
+						console.log(data);
+					}
+				});
+			});
+
+			//------------------------------------------------------------------------------套用到下拉選單
+			$('#btn4').on('click', function () {
+				//   $('#TESTER_ID').val($('#batchtester_id').val());
+				//   $('#STATUS').val($('#batchstatus').val());
+
+				$(".form-control2").val($('#batchtester_id').val());
+				$(".form-control1").val($('#batchstatus').val());
+			});
+		}
+
+		//------------------------------------------------------------------------------套用到下拉選單
+		/*console.log($(".form-control").val()); */
+		$("#btn2").on("click", function () {
+			$("#table1").tableHTMLExport({
+				type: "csv",
+				filname: 'sample.csv'
+			});
+		});
+
+
+		function tofind() {
+			if (program_type.value == "BATCH" && AD.value == "") {
+				alert("請輸入AD")
+			} else {
+				var form17 = document.form17;
+				form17.action = "show";
+				form17.submit();
+			}
+		};
+
+
+
+	</script>
+
+</body>
+
+</html>

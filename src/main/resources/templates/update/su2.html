@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+
+
+	<script type="text/javascript" th:inline="none">
+
+		function tofind() {
+			if (program_type.value=="BATCH" && AD.value == "") {
+				alert("請輸入AD")
+			} else {
+				var form1 = document.form1;
+				form1.action = "show";
+				form1.submit();
+			}
+		};
+
+		function toupdate() {
+			if (program_type.value=="BATCH" && AD.value == "") {
+				alert("請輸入AD")
+			} else {
+				var form1 = document.form1;
+				form1.action = "batch";
+				form1.submit();
+			}
+		};
+
+	</script>
+
+</head>
+
+<body>
+	<table border="1" cellpadding="1" cellspacing="1" style="width:850px">
+		<tr>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/jcl/jcl_home}"
+					style="color: azure">查詢可執行之AD</a></th>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/su}" style="color: azure">測試個案查詢</a>
+			</th>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/defect}">
+					<font color=#FFFFFF>DEFECT維護及查詢</font>
+				</a></th>
+			<th scope="col" style="background-color:#6699cc;"><a th:href="@{/report}">
+					<font color=#FFFFFF>統計報表</font>
+				</a></th>
+		</tr>
+	</table>
+
+
+	<h2>查詢條件</h2>
+	<form name="form1" action="" method="get">
+		測試階段分類 :
+		<select class="form-control" name="test_type" id="test_type">
+			<option value="ALL">ALL</option>
+			<option th:each="test_type:${test_type}" th:value="${test_type.CODE_ID}" th:text="${test_type.CODE_DESC}"></option>
+		</select><br>
+		程式作業類別 :
+		<select class="form-control" name="program_type" id="program_type">
+			<option value="BATCH">批次作業</option>
+			<option value="ONLINE">線上作業</option>
+		</select><br>
+		批次系統作業類別 :
+		<select class="form-control" name="system_operation" id="system_operation">
+			<option value="ALL">ALL</option>
+			<option th:each="system_operation:${system_operation}" th:value="${system_operation.CODE_DESC}" th:text="${system_operation.CODE_DESC}"></option>
+		</select><br>
+		線上交易作業類別 :
+		<select class="form-control" name="online_operation" id="online_operation">
+			<option value="CICS WEB">CICS WEB</option>
+			<option value="Data Power">Data Power</option>
+			<option value="Socke">Socket</option>
+			<option value="Web Service">Web Service</option>
+		</select><br>
+
+
+		AD :
+		<input type="text" name="AD" id="AD" required><br>
+		JCL :
+		<input type="text" name="JCL" required><br>
+
+		<input type="button" name="search" value="查詢" onclick="tofind()">
+		<!-- <input type="button" name="update" value="批次更新" onclick="toupdate()" /> -->
+
+		<input hidden name="page" value="0">
+	</form>
+	查無資料
+</body>
+
+</html>

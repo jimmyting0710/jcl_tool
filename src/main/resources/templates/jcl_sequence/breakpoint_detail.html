@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en"></head>
+<body>
+<div style="display:inline-block">
+    <strong>資料庫比對斷點</strong>
+</div>
+
+<table border="1" cellpadding="1" cellspacing="1" style="width:500px">
+    <thead>
+    <tr>
+        <td style="background-color: rgb(204, 255, 153);">SPRINT</td>
+        <td style="background-color: rgb(204, 255, 153);">AD</td>
+        <td style="background-color: rgb(204, 255, 153);">JCL</td>
+        <td style="background-color: rgb(204, 255, 153);">DD</td>
+        <td style="background-color: rgb(204, 255, 153);">OWNER</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="fbpd : ${findBreakPointDetail}">
+        <td th:text="${fbpd.sprintno}"></td>
+        <td th:switch="${fbpd.addesc != null}">
+            <span th:case="true" th:text="${fbpd.ad}+${fbpd.addesc}"></span>
+            <span th:case="false" th:text="${fbpd.ad}"></span>
+        </td>
+        <td th:text="${fbpd.jcl}"></td>
+        <td th:text="${fbpd.dd}"></td>
+        <td th:text="${fbpd.owner}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p>&nbsp;</p>
+<p><input name="close" type="button" value="關閉視窗" onclick="window.close();"/></p>
+</body>
+</html>

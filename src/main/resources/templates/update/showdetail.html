@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+
+	<table border="2" th:each="detail:${detail}">
+		<tr>
+			<div style="display:inline-block">
+				<div style="display:inline-block; font-size: large; font-weight: bold">
+					<h2>查詢結果</h2>
+				</div>
+				<strong>：</strong>
+				<div style="display:inline-block; font-size: large; font-weight: bold" th:text="${detail.issue_key}">
+				</div>
+			</div>
+		</tr>
+
+
+
+		<tr>
+			<td>Defect編號</td>
+			<td th:text="${detail.issue_key}"></td>
+
+
+		</tr>
+
+		<tr>
+			<td>Defect狀態</td>
+			<td th:text="${detail.issue_type}">
+
+			</td>
+		</tr>
+		<tr>
+			<td>Defect縮寫</td>
+			<td th:text="${detail.issue_status}">
+
+			</td>
+		</tr>
+		<tr>
+			<td>Defect說明</td>
+			<td th:text="${detail.CODE_DESC}"></td>
+		</tr>
+		</form>
+	</table>
+	<input type="button" value="關閉" onclick="window.close();" />
+
+
+
+
+</body>
+
+</html>
